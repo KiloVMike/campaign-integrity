@@ -6,4 +6,5 @@ test_pdf.html
 .vscode/
 .idea/
 *.py
-
+*.png
+*.html
