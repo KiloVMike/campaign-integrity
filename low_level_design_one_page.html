@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Campaign Integrity — Low-Level Design One-Page Brief</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 210mm;
+    height: 297mm;
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #0f172a;
+    line-height: 1.28;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 210mm;
+    height: 297mm;
+    padding: 7mm 9.5mm 6mm 9.5mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .header {
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 4px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .title-group h1 { font-size: 19pt; font-weight: 900; letter-spacing: -0.5px; color: #0f172a; }
+  .title-group .sub { font-size: 9pt; font-weight: 650; color: #0284c7; margin-top: 1px; }
+  .meta-tag { font-size: 7.2pt; color: #334155; font-weight: 600; text-align: right; }
+  .inv-box {
+    background: linear-gradient(135deg, #07172f 0%, #0f172a 100%);
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .inv-row { display: flex; justify-content: space-between; font-size: 7.2pt; }
+  .inv-code {
+    font-family: monospace;
+    font-size: 6.8pt;
+    background: rgba(255,255,255,0.08);
+    padding: 3px 6px;
+    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.18);
+    text-align: center;
+    color: #ffffff;
+  }
+  .grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    flex-grow: 1;
+    margin-bottom: 4px;
+  }
+  .card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .card-head {
+    font-size: 8.2pt;
+    font-weight: 850;
+    text-transform: uppercase;
+    color: #0f172a;
+    border-bottom: 1.5px solid #f1f5f9;
+    padding-bottom: 2.5px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .card-num {
+    background: #0284c7;
+    color: #ffffff;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    font-size: 6.8pt;
+    font-weight: 850;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tbl-mini {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 6.8pt;
+  }
+  .tbl-mini th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 750;
+    padding: 2.5px 4px;
+    border-bottom: 1px solid #cbd5e1;
+    text-align: left;
+  }
+  .tbl-mini td {
+    padding: 3px 4px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+    vertical-align: top;
+  }
+  .code-snip {
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: monospace;
+    font-size: 6.5pt;
+    padding: 5px 6px;
+    border-radius: 4px;
+    line-height: 1.25;
+  }
+  .footer {
+    border-top: 1.5px solid #cbd5e1;
+    padding-top: 3.5px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.2pt;
+    color: #64748b;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div>
+    <div class="header">
+      <div class="title-group">
+        <h1>CAMPAIGN INTEGRITY — LLD BRIEF</h1>
+        <div class="sub">Low-Level Design & Critical Feature Architecture Specification</div>
+      </div>
+      <div class="meta-tag">
+        Track: Martech · Team: MAL 4<br/>
+        Deliverable: One-Page LLD Brief
+      </div>
+    </div>
+
+    <div class="inv-box">
+      <div class="inv-row">
+        <span style="font-weight: 850; color: #38bdf8;">THE CRITICAL FEATURE INVARIANT</span>
+        <span style="font-style: italic; color: #cbd5e1;">“The campaign that gets scheduled is the exact campaign that was approved.”</span>
+      </div>
+      <div class="inv-code">
+        active_schedule(c) ⇒ current_rev(c).state = APPROVED ∧ decision.rev_id = current_rev(c).id ∧ decision.content_hash = current_rev(c).content_hash
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2col">
+    <!-- LEFT COLUMN -->
+    <div style="display: flex; flex-direction: column; gap: 6px; justify-content: space-between;">
+      
+      <!-- 1. RELATIONAL DDL -->
+      <div class="card">
+        <div class="card-head"><span class="card-num">1</span> Relational Schema & Indices</div>
+        <table class="tbl-mini">
+          <thead>
+            <tr><th>Table</th><th>Keys & Constraints</th><th>Invariant Target</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>campaigns</code></td>
+              <td><code>id (PK), current_rev_id (FK)</code></td>
+              <td>Lock root: <code>SELECT FOR UPDATE</code></td>
+            </tr>
+            <tr>
+              <td><code>revisions</code></td>
+              <td><code>id (PK), campaign_id, content_hash</code></td>
+              <td>Immutable copy-on-write version tree</td>
+            </tr>
+            <tr>
+              <td><code>decisions</code></td>
+              <td><code>id (PK), revision_id, hash</code></td>
+              <td>Cryptographically bound reviewer approval</td>
+            </tr>
+            <tr>
+              <td><code>schedules</code></td>
+              <td><code>id (PK), rev_id, dec_id</code></td>
+              <td>Partial unique index: 1 active schedule/cmp</td>
+            </tr>
+            <tr>
+              <td><code>audit_events</code></td>
+              <td><code>id (PK), actor_id, rev_id, correlation_id</code></td>
+              <td>Insert-only; UPDATE/DELETE revoked</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2. REVISION STATE MACHINE -->
+      <div class="card">
+        <div class="card-head"><span class="card-num">2</span> Revision State Machine & Mutations</div>
+        <table class="tbl-mini">
+          <thead>
+            <tr><th>Transition</th><th>Trigger Action</th><th>Enforced Guard</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>DRAFT ➔ IN_REVIEW</code></td>
+              <td>Submit for review</td>
+              <td>Author only; complete fields</td>
+            </tr>
+            <tr>
+              <td><code>IN_REVIEW ➔ APPROVED</code></td>
+              <td>Reviewer approves</td>
+              <td><code>reviewer ≠ author ∧ hash_match</code></td>
+            </tr>
+            <tr>
+              <td><code>IN_REVIEW ➔ CHANGES_REQ</code></td>
+              <td>Request changes</td>
+              <td>Mandatory written rationale note</td>
+            </tr>
+            <tr>
+              <td><code>APPROVED ➔ SCHEDULED</code></td>
+              <td>Schedule campaign</td>
+              <td>Single atomic gate checks pass</td>
+            </tr>
+            <tr>
+              <td><code>APPROVED ➔ SUPERSEDED</code></td>
+              <td>Post-approval edit</td>
+              <td>Copy-on-write fork; cancels schedule!</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 3. CLEAN ARCHITECTURE BOUNDARIES -->
+      <div class="card">
+        <div class="card-head"><span class="card-num">3</span> Clean Architecture Layer Boundaries</div>
+        <div style="font-size: 6.8pt; color: #334155; line-height: 1.25;">
+          <strong>Mobile Client:</strong> Presentation ➔ Use Cases ➔ Domain Helpers ➔ Repositories ➔ SQLite Outbox.<br/>
+          <strong>API Monolith:</strong> HTTP Transport ➔ Application Services (Tx Boundary) ➔ Domain Core ➔ Persistence Repositories ➔ PostgreSQL.<br/>
+          <strong>Dependency Rule:</strong> Domain core imports NOTHING from Express, SQL, or React Native.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div style="display: flex; flex-direction: column; gap: 6px; justify-content: space-between;">
+      
+      <!-- 4. ATOMIC SCHEDULING GATE -->
+      <div class="card">
+        <div class="card-head"><span class="card-num">4</span> The Atomic Scheduling Gate (Tx)</div>
+        <div class="code-snip">
+// ScheduleService.execute() inside PostgreSQL transaction:
+const c = await tx.query("SELECT * FROM campaigns WHERE id=$1 FOR UPDATE", [id]);
+if (req.revId !== c.current_revision_id) throw new ConflictError("REVISION_STALE");
+const rev = await getRevision(tx, req.revId);
+if (rev.state !== "APPROVED") throw new ConflictError("APPROVAL_INVALID");
+const dec = await getActiveDecision(tx, rev.id);
+if (dec.content_hash !== rev.content_hash) throw new ConflictError("HASH_MISMATCH");
+if (await hasActiveSchedule(tx, c.id)) throw new ConflictError("ALREADY_SCHEDULED");
+await insertSchedule(tx, ...);
+await insertAudit(tx, "CAMPAIGN_SCHEDULED", ...);
+        </div>
+      </div>
+
+      <!-- 5. REST API CONTRACTS & 409 ERRORS -->
+      <div class="card">
+        <div class="card-head"><span class="card-num">5</span> API Endpoints & 409 Conflict Envelopes</div>
+        <table class="tbl-mini">
+          <thead>
+            <tr><th>HTTP Command</th><th>Key Payload / Header</th><th>Deterministic Conflict Response</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>POST /campaigns</code></td>
+              <td><code>Idempotency-Key</code>, title, budget</td>
+              <td>400 Validation Error</td>
+            </tr>
+            <tr>
+              <td><code>POST /submit</code></td>
+              <td><code>Idempotency-Key</code></td>
+              <td>409 REVISION_NOT_DRAFT</td>
+            </tr>
+            <tr>
+              <td><code>POST /decisions</code></td>
+              <td><code>APPROVED | CHANGES_REQ</code></td>
+              <td>403 SELF_REVIEW_PROHIBITED</td>
+            </tr>
+            <tr>
+              <td><code>PATCH /campaigns/:id</code></td>
+              <td>New budget, audience, objective</td>
+              <td>Copy-on-write fork (auto-cancel schedule)</td>
+            </tr>
+            <tr>
+              <td><code>POST /schedule</code></td>
+              <td><code>revisionId, expectedHash</code></td>
+              <td>409 REVISION_STALE | HASH_MISMATCH</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 6. RESILIENCE & OUTBOX SYNC -->
+      <div class="card">
+        <div class="card-head"><span class="card-num">6</span> Resilience & Defensibility Tactics</div>
+        <div style="font-size: 6.8pt; color: #334155; line-height: 1.25;">
+          <strong>SQLite Command Outbox:</strong> Persists user intent locally prior to dispatch; sync engine recovers seamlessly after app kill.<br/>
+          <strong>Exactly-Once Idempotency:</strong> Client UUID keys guarantee retried requests return cached responses with zero duplicate state mutations.<br/>
+          <strong>Derived Not Stored:</strong> Approval is computed dynamically. Eliminates mutable boolean drift entirely.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>MAL 4 · Hackathon Architecture Deliverable · Track: Martech</span>
+    <span>“The campaign that gets scheduled is the campaign that was approved.”</span>
+    <span style="font-weight: 700; color: #0f172a;">A4 Portrait · Exactly 1 Page</span>
+  </div>
+</div>
+</body>
+</html>

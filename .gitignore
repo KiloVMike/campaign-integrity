@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*$py.class
+test.pdf
+test_pdf.html
+.vscode/
+.idea/
+*.py
+

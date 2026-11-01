@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #080c14;
+    background-image: 
+      radial-gradient(circle at 10% 15%, rgba(59, 130, 246, 0.09) 0%, transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #f1f5f9;
+    padding: 24px 32px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 16px;
+  }
+  .title-group h1 {
+    font-size: 21pt;
+    font-weight: 850;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .title-group h1 .tag {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(14, 165, 233, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 3px 9px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .title-group p {
+    font-size: 10pt;
+    color: #94a3b8;
+    margin-top: 3px;
+    font-weight: 500;
+  }
+  .meta-badges {
+    text-align: right;
+    display: flex;
+    gap: 8px;
+  }
+  .meta-badge {
+    background: rgba(15,23,42,0.85);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 8pt;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+  .meta-badge.highlight {
+    background: rgba(14, 165, 233, 0.25);
+    border-color: #0ea5e9;
+    color: #7dd3fc;
+  }
+  .card {
+    background: rgba(15, 23, 42, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 14px 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+  }
+  .card-title {
+    font-size: 9.8pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #94a3b8;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 6px;
+  }
+  .card-title .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0ea5e9;
+    display: inline-block;
+  }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 8.5pt;
+    color: #64748b;
+  }
+  .code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  }
+
+  .schema-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .table-card {
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .table-card.pk-blue { border-top: 3px solid #38bdf8; }
+  .table-card.pk-green { border-top: 3px solid #34d399; }
+  .table-card.pk-purple { border-top: 3px solid #a78bfa; }
+  .table-card.pk-amber { border-top: 3px solid #fbbf24; }
+  .table-card.pk-rose { border-top: 3px solid #f43f5e; }
+  .table-header {
+    background: rgba(30, 41, 59, 0.7);
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .table-name {
+    font-family: monospace;
+    font-weight: 850;
+    font-size: 9.5pt;
+    color: #ffffff;
+  }
+  .table-desc {
+    font-size: 7.5pt;
+    color: #94a3b8;
+  }
+  .column-list {
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: monospace;
+    font-size: 8pt;
+  }
+  .col-row {
+    display: flex;
+    justify-content: space-between;
+    color: #cbd5e1;
+    border-bottom: 1px dashed rgba(255,255,255,0.05);
+    padding-bottom: 2px;
+  }
+  .col-name { color: #e2e8f0; font-weight: 600; }
+  .col-name.pk { color: #38bdf8; font-weight: bold; }
+  .col-name.fk { color: #a78bfa; }
+  .col-type { color: #64748b; font-size: 7.5pt; }
+  .constraint-box {
+    background: rgba(0,0,0,0.25);
+    padding: 6px 10px;
+    font-size: 7.5pt;
+    color: #94a3b8;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    line-height: 1.25;
+  }
+  .constraint-box strong { color: #38bdf8; }
+</style>
+</head>
+<body style="width: 1600px; height: 800px;">
+  <div class="header">
+    <div class="title-group">
+      <h1>LLD Diagram 01: Relational Schema & Relational Invariants <span class="tag">Database Architecture</span></h1>
+      <p>PostgreSQL System of Record DDL, Foreign Key Constraints & Row-Lock Targets</p>
+    </div>
+    <div class="meta-badges">
+      <div class="meta-badge highlight">PostgreSQL 16</div>
+      <div class="meta-badge">Append-Only Audit</div>
+      <div class="meta-badge">LLD Section 5</div>
+    </div>
+  </div>
+
+  <div class="schema-grid">
+    <!-- TABLE 1: CAMPAIGNS -->
+    <div class="table-card pk-blue">
+      <div class="table-header">
+        <span class="table-name">campaigns</span>
+        <span class="table-desc">Campaign Container & Lock Root</span>
+      </div>
+      <div class="column-list">
+        <div class="col-row"><span class="col-name pk">id (PK)</span><span class="col-type">TEXT (CMP-...)</span></div>
+        <div class="col-row"><span class="col-name">created_by</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name fk">current_rev_id (FK)</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">created_at</span><span class="col-type">TIMESTAMPTZ NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">updated_at</span><span class="col-type">TIMESTAMPTZ NOT NULL</span></div>
+      </div>
+      <div class="constraint-box">
+        <strong>Lock Target:</strong> Serializes concurrency via <code>SELECT * FROM campaigns FOR UPDATE</code>.
+      </div>
+    </div>
+
+    <!-- TABLE 2: REVISIONS -->
+    <div class="table-card pk-green">
+      <div class="table-header">
+        <span class="table-name">revisions</span>
+        <span class="table-desc">Immutable Version Tree</span>
+      </div>
+      <div class="column-list">
+        <div class="col-row"><span class="col-name pk">id (PK)</span><span class="col-type">TEXT (REV-...)</span></div>
+        <div class="col-row"><span class="col-name fk">campaign_id (FK)</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">revision_number</span><span class="col-type">INTEGER NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">state</span><span class="col-type">RevisionState ENUM</span></div>
+        <div class="col-row"><span class="col-name">objective, audience</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">channel, budget_paise</span><span class="col-type">ENUM, BIGINT</span></div>
+        <div class="col-row"><span class="col-name">content_hash</span><span class="col-type">CHAR(64) SHA-256</span></div>
+      </div>
+      <div class="constraint-box">
+        <strong>Copy-on-Write:</strong> Edits insert a new row; prior revision marked <code>SUPERSEDED</code>.
+      </div>
+    </div>
+
+    <!-- TABLE 3: DECISIONS -->
+    <div class="table-card pk-purple">
+      <div class="table-header">
+        <span class="table-name">decisions</span>
+        <span class="table-desc">Cryptographically Bound Approval</span>
+      </div>
+      <div class="column-list">
+        <div class="col-row"><span class="col-name pk">id (PK)</span><span class="col-type">TEXT (DEC-...)</span></div>
+        <div class="col-row"><span class="col-name fk">campaign_id (FK)</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name fk">revision_id (FK)</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">reviewer_id</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">outcome</span><span class="col-type">APPROVED | CHANGES_REQ</span></div>
+        <div class="col-row"><span class="col-name">content_hash</span><span class="col-type">CHAR(64) SHA-256</span></div>
+        <div class="col-row"><span class="col-name">note</span><span class="col-type">TEXT (Required if changes)</span></div>
+      </div>
+      <div class="constraint-box">
+        <strong>Derived Approval:</strong> Valid iff <code>rev.id = dec.rev_id ∧ rev.hash = dec.hash</code>.
+      </div>
+    </div>
+
+    <!-- TABLE 4: SCHEDULES -->
+    <div class="table-card pk-amber">
+      <div class="table-header">
+        <span class="table-name">schedules</span>
+        <span class="table-desc">Atomic Eligibility Gate Target</span>
+      </div>
+      <div class="column-list">
+        <div class="col-row"><span class="col-name pk">id (PK)</span><span class="col-type">TEXT (SCH-...)</span></div>
+        <div class="col-row"><span class="col-name fk">campaign_id (FK)</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name fk">revision_id (FK)</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name fk">decision_id (FK)</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">state</span><span class="col-type">SCHEDULED | CANCELLED</span></div>
+        <div class="col-row"><span class="col-name">scheduled_at</span><span class="col-type">TIMESTAMPTZ NOT NULL</span></div>
+      </div>
+      <div class="constraint-box">
+        <strong>Partial Unique Index:</strong> Exactly one active <code>SCHEDULED</code> row per campaign allowed.
+      </div>
+    </div>
+
+    <!-- TABLE 5: AUDIT_EVENTS -->
+    <div class="table-card pk-rose">
+      <div class="table-header">
+        <span class="table-name">audit_events</span>
+        <span class="table-desc">Tamper-Evident Domain Trail</span>
+      </div>
+      <div class="column-list">
+        <div class="col-row"><span class="col-name pk">id (PK)</span><span class="col-type">TEXT (AUD-...)</span></div>
+        <div class="col-row"><span class="col-name">actor_id</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">event_type</span><span class="col-type">AuditEventType ENUM</span></div>
+        <div class="col-row"><span class="col-name fk">campaign_id, rev_id</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">correlation_id</span><span class="col-type">UUID NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">payload</span><span class="col-type">JSONB NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">created_at</span><span class="col-type">TIMESTAMPTZ DEFAULT now()</span></div>
+      </div>
+      <div class="constraint-box">
+        <strong>Insert-Only:</strong> Database permissions revoke <code>UPDATE</code> and <code>DELETE</code>.
+      </div>
+    </div>
+
+    <!-- TABLE 6: IDEMPOTENCY_KEYS -->
+    <div class="table-card pk-blue">
+      <div class="table-header">
+        <span class="table-name">idempotency_keys</span>
+        <span class="table-desc">Crash & Replay Defense</span>
+      </div>
+      <div class="column-list">
+        <div class="col-row"><span class="col-name pk">key (PK)</span><span class="col-type">TEXT (UUID)</span></div>
+        <div class="col-row"><span class="col-name">actor_id</span><span class="col-type">TEXT NOT NULL</span></div>
+        <div class="col-row"><span class="col-name">request_hash</span><span class="col-type">CHAR(64) SHA-256</span></div>
+        <div class="col-row"><span class="col-name">status</span><span class="col-type">IN_FLIGHT | COMMITTED</span></div>
+        <div class="col-row"><span class="col-name">response_status</span><span class="col-type">INTEGER</span></div>
+        <div class="col-row"><span class="col-name">response_body</span><span class="col-type">JSONB</span></div>
+        <div class="col-row"><span class="col-name">expires_at</span><span class="col-type">TIMESTAMPTZ NOT NULL</span></div>
+      </div>
+      <div class="constraint-box">
+        <strong>Exactly-Once:</strong> Duplicate requests return cached response body directly.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div><strong>Referential Integrity:</strong> All revision references are immutable foreign keys. Deleting active campaigns is prohibited.</div>
+    <div>Relational Schema Blueprint · Low-Level Design Section 5</div>
+  </div>
+</body>
+</html>

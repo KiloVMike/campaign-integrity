@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #080c14;
+    background-image: 
+      radial-gradient(circle at 10% 15%, rgba(59, 130, 246, 0.09) 0%, transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #f1f5f9;
+    padding: 24px 32px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 16px;
+  }
+  .title-group h1 {
+    font-size: 21pt;
+    font-weight: 850;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .title-group h1 .tag {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(14, 165, 233, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 3px 9px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .title-group p {
+    font-size: 10pt;
+    color: #94a3b8;
+    margin-top: 3px;
+    font-weight: 500;
+  }
+  .meta-badges {
+    text-align: right;
+    display: flex;
+    gap: 8px;
+  }
+  .meta-badge {
+    background: rgba(15,23,42,0.85);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 8pt;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+  .meta-badge.highlight {
+    background: rgba(14, 165, 233, 0.25);
+    border-color: #0ea5e9;
+    color: #7dd3fc;
+  }
+  .card {
+    background: rgba(15, 23, 42, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 14px 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+  }
+  .card-title {
+    font-size: 9.8pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #94a3b8;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 6px;
+  }
+  .card-title .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0ea5e9;
+    display: inline-block;
+  }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 8.5pt;
+    color: #64748b;
+  }
+  .code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  }
+
+  .api-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 18px;
+  }
+  .endpoint-card {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .endpoint-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: monospace;
+    font-size: 8.8pt;
+    font-weight: 700;
+  }
+  .method-post { background: rgba(59, 130, 246, 0.25); color: #60a5fa; padding: 2px 6px; border-radius: 4px; }
+  .method-patch { background: rgba(245, 158, 11, 0.25); color: #fbbf24; padding: 2px 6px; border-radius: 4px; }
+  .method-get { background: rgba(16, 185, 129, 0.25); color: #34d399; padding: 2px 6px; border-radius: 4px; }
+  .endpoint-desc {
+    font-size: 7.8pt;
+    color: #94a3b8;
+    margin-top: 4px;
+    line-height: 1.25;
+  }
+  .error-tax-box {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1.5px solid #f43f5e;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .err-row {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .err-code { font-family: monospace; font-size: 8.5pt; color: #fb7185; font-weight: 700; }
+  .err-meaning { font-size: 7.8pt; color: #cbd5e1; margin-top: 2px; }
+</style>
+</head>
+<body style="width: 1600px; height: 800px;">
+  <div class="header">
+    <div class="title-group">
+      <h1>LLD Diagram 04: API Contracts & Error Taxonomy <span class="tag">RESTful Protocols</span></h1>
+      <p>Idempotency Headers, Command Payloads & Deterministic 409 Conflict Responses</p>
+    </div>
+    <div class="meta-badges">
+      <div class="meta-badge highlight">RFC 7807 Error Envelope</div>
+      <div class="meta-badge">LLD Section 6 & 7</div>
+    </div>
+  </div>
+
+  <div class="api-grid">
+    <div>
+      <div class="endpoint-card">
+        <div class="endpoint-head">
+          <span class="method-post">POST</span>
+          <span>/v1/campaigns</span>
+        </div>
+        <div class="endpoint-desc">Creates campaign container + Revision 1 (DRAFT). Requires <code>Idempotency-Key</code> header.</div>
+      </div>
+
+      <div class="endpoint-card">
+        <div class="endpoint-head">
+          <span class="method-post">POST</span>
+          <span>/v1/campaigns/:id/submit</span>
+        </div>
+        <div class="endpoint-desc">Locks revision and moves to <code>IN_REVIEW</code>. Computes initial canonical SHA-256 content hash.</div>
+      </div>
+
+      <div class="endpoint-card">
+        <div class="endpoint-head">
+          <span class="method-post">POST</span>
+          <span>/v1/campaigns/:id/decisions</span>
+        </div>
+        <div class="endpoint-desc">Reviewer signs <code>APPROVED</code> or <code>CHANGES_REQUESTED</code> with mandatory written rationale. Binds hash.</div>
+      </div>
+
+      <div class="endpoint-card">
+        <div class="endpoint-head">
+          <span class="method-patch">PATCH</span>
+          <span>/v1/campaigns/:id</span>
+        </div>
+        <div class="endpoint-desc">Copy-on-write edit. Supersedes current revision, forks new DRAFT, cancels active schedule.</div>
+      </div>
+
+      <div class="endpoint-card">
+        <div class="endpoint-head">
+          <span class="method-post">POST</span>
+          <span>/v1/campaigns/:id/schedule</span>
+        </div>
+        <div class="endpoint-desc">Atomic schedule gate. Requires <code>revisionId</code>, <code>expectedContentHash</code>, and <code>scheduledAt</code>.</div>
+      </div>
+    </div>
+
+    <div class="error-tax-box">
+      <div class="card-title" style="color: #fb7185;"><span class="dot" style="background: #f43f5e;"></span> Deterministic Conflict Taxonomy (409)</div>
+
+      <div class="err-row">
+        <div class="err-code">409 REVISION_STALE</div>
+        <div class="err-meaning">Requested revision ID does not match <code>campaign.current_revision_id</code>. Another user updated the proposal.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">409 APPROVAL_INVALID</div>
+        <div class="err-meaning">Current revision is in <code>DRAFT</code> or <code>CHANGES_REQUESTED</code>. Scheduling attempted without reviewer sign-off.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">409 CONTENT_HASH_MISMATCH</div>
+        <div class="err-meaning">Decision content hash differs from revision SHA-256 hash. Detects silent tampering or corruption.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">409 ALREADY_SCHEDULED</div>
+        <div class="err-meaning">Active schedule already exists for this campaign container. Prevents double-scheduling races.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">403 SELF_REVIEW_PROHIBITED</div>
+        <div class="err-meaning">Actor attempted to approve their own proposal. Strict separation of duties violation.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div><strong>Deterministic Responses:</strong> Every conflict returns code + current revision snapshot for instant client reconciliation.</div>
+    <div>API Protocol Blueprint · Low-Level Design Section 6</div>
+  </div>
+</body>
+</html>
